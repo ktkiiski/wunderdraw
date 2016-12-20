@@ -14,6 +14,7 @@ const canvas = document.getElementById('canvas');
 const width = canvas.clientWidth;
 const height = canvas.clientWidth;
 const context = canvas.getContext("2d");
+context.strokeStyle = "#FFFFFF";
 
 const sourceImage = document.getElementById('source');
 window.onload = () => {
@@ -37,8 +38,29 @@ window.onload = () => {
  * Draws the figure starting at the position
  * and towards the given direction.
  */
-function draw(context, x, y, direction) {
-    console.log(`TODO: Draw from ${x},${y} to direction:`, direction);
+function draw(context, startX, startY, direction) {
+    const [dX, dY] = direction;
+    const endX = startX + dX;
+    const endY = startY + dY;
+    context.moveTo(startX, startY);
+    context.lineTo(endX, endY);
+    const color = getPixelColor(context, endX, endY);
+    if (rgbEqual(color, COLOR_STOP)) {
+        // Stop drawing and finish the stroke
+        context.stroke();
+    }
+    else if (rgbEqual(color, COLOR_TURN_LEFT)) {
+        // Turn left and continue drawing
+        draw(context, endX, endY, rotateLeft(direction));
+    }
+    else if (rgbEqual(color, COLOR_TURN_RIGHT)) {
+        // Turn right and continue drawing
+        draw(context, endX, endY, rotateRight(direction));
+    }
+    else {
+        // Continue to the same direction
+        draw(context, endX, endY, direction);
+    }
 }
 
 /**
@@ -67,4 +89,20 @@ function getPixelColor(context, x, y) {
  */
 function rgbEqual(rgb1, rgb2) {
     return rgb1.every((value, index) => rgb2[index] === value);
+}
+
+/**
+ * Rotates the given direction vector by 90 degrees clockwise,
+ * returning a copied vector.
+ */
+function rotateRight([x, y]) {
+    return [-y, x]; 
+}
+
+/**
+ * Rotates the given direction vector by 90 degrees clockwise,
+ * returning a copied vector.
+ */
+function rotateLeft([x, y]) {
+    return [y, -x]; 
 }
