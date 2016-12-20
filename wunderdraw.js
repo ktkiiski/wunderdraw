@@ -9,27 +9,26 @@ const COLOR_TURN_LEFT = [123, 131, 154, 255];
 const VECTOR_UP = [0, -1];
 const VECTOR_LEFT = [-1, 0];
 
-// References to the canvas element and the context
-const canvas = document.getElementById('canvas');
-const width = canvas.clientWidth;
-const height = canvas.clientWidth;
-const context = canvas.getContext("2d");
-context.strokeStyle = "#FFFFFF";
-
-const sourceImage = document.getElementById('source');
 window.onload = () => {
     // Draw the source image to the canvas
-    context.drawImage(sourceImage, 0, 0);
+    const sourceCanvas = document.createElement('canvas');
+    const sourceImage = document.getElementById('source');
+    sourceCanvas.width = sourceImage.width;
+    sourceCanvas.height = sourceImage.height;
+    const sourceContext = sourceCanvas.getContext('2d');
+    sourceContext.drawImage(sourceImage, 0, 0);
 
-    // Iterate through all the pixels
-    eachPixel(canvas, (context, color, x, y) => {
+    const targetCanvas = document.getElementById('canvas');
+    const targetContext = targetCanvas.getContext('2d');
+    // Iterate through all the pixels. Start drawing from starting colors
+    eachPixel(sourceContext, (color, x, y) => {
         if (rgbEqual(color, COLOR_START_UP)) {
             // Start drawing up
-            draw(context, x, y, VECTOR_UP);
+            draw(sourceContext, targetContext, x, y, VECTOR_UP);
         }
         else if (rgbEqual(color, COLOR_START_LEFT)) {
             // Start drawing left
-            draw(context, x, y, VECTOR_LEFT);
+            draw(sourceContext, targetContext, x, y, VECTOR_LEFT);
         }
     });
 };
@@ -38,40 +37,39 @@ window.onload = () => {
  * Draws the figure starting at the position
  * and towards the given direction.
  */
-function draw(context, startX, startY, direction) {
+function draw(source, target, startX, startY, direction) {
     const [dX, dY] = direction;
     const endX = startX + dX;
     const endY = startY + dY;
-    context.moveTo(startX, startY);
-    context.lineTo(endX, endY);
-    const color = getPixelColor(context, endX, endY);
+    target.moveTo(startX, startY);
+    target.lineTo(endX, endY);
+    const color = getPixelColor(source, endX, endY);
     if (rgbEqual(color, COLOR_STOP)) {
         // Stop drawing and finish the stroke
-        context.stroke();
+        target.stroke();
     }
     else if (rgbEqual(color, COLOR_TURN_LEFT)) {
         // Turn left and continue drawing
-        draw(context, endX, endY, rotateLeft(direction));
+        draw(source, target, endX, endY, rotateLeft(direction));
     }
     else if (rgbEqual(color, COLOR_TURN_RIGHT)) {
         // Turn right and continue drawing
-        draw(context, endX, endY, rotateRight(direction));
+        draw(source, target, endX, endY, rotateRight(direction));
     }
     else {
         // Continue to the same direction
-        draw(context, endX, endY, direction);
+        draw(source, target, endX, endY, direction);
     }
 }
 
 /**
  * Iterates through all the pixels on the canvas.
  */
-function eachPixel(canvas, callback) {
-    const context = canvas.getContext("2d");
-    for (let y = 0; y < canvas.clientHeight; y += 1) {
-        for (let x = 0; x < canvas.clientWidth; x += 1) {
+function eachPixel(context, callback) {
+    for (let y = 0; y < context.canvas.height; y += 1) {
+        for (let x = 0; x < context.canvas.width; x += 1) {
             const color = getPixelColor(context, x, y);
-            callback(context, color, x, y);
+            callback(color, x, y);
         }
     }
 }
