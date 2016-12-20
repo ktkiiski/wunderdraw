@@ -1,3 +1,10 @@
+/**
+ * This is a solution to Wunderpahkina vol. 5 programming challenge:
+ * https://github.com/wunderdogsw/wunderpahkina-vol5
+ * 
+ * @author Kimmo Kiiski
+ */
+
 // The color definition in RGBA values
 const COLOR_START_UP = rgb(7, 84, 19);
 const COLOR_START_LEFT = rgb(139, 57, 137);
@@ -48,7 +55,7 @@ function draw(source, target, x, y, direction) {
     // Determine the next action from the color at the source image
     const color = getPixelColor(source, nextX, nextY);
     if (color === COLOR_STOP) {
-        // Stop drawing and finish the stroke
+        // Stop drawing and finish with the last pixel
         drawPixel(target, nextX, nextY);
     }
     else if (color === COLOR_TURN_LEFT) {
