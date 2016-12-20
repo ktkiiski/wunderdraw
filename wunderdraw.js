@@ -12,13 +12,13 @@ const VECTOR_LEFT = [-1, 0];
 window.onload = () => {
     // Draw the source image to the canvas
     const sourceCanvas = document.createElement('canvas');
-    const sourceImage = document.getElementById('source');
+    const sourceImage = document.getElementById('source-image');
     sourceCanvas.width = sourceImage.width;
     sourceCanvas.height = sourceImage.height;
     const sourceContext = sourceCanvas.getContext('2d');
     sourceContext.drawImage(sourceImage, 0, 0);
 
-    const targetCanvas = document.getElementById('canvas');
+    const targetCanvas = document.getElementById('target-canvas');
     const targetContext = targetCanvas.getContext('2d');
     // Iterate through all the pixels. Start drawing from starting colors
     eachPixel(sourceContext, (color, x, y) => {
