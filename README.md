@@ -5,13 +5,9 @@ This is a solution to [Wunderpahkina vol. 5](https://github.com/wunderdogsw/wund
 
 It is written in JavaScript and can be run in any modern browser that supports **ECMAScript 6**.
 
-### Contents
-
 - [`wunderdraw.js`](./wunderdraw.js) is the JavaScript solution
 - [`index.html`](./index.html) is the webpage containing the base elements and the script
 - [`wundernut.png`](./wundernut.png) is the original puzzle image to solve
-
-### Run solution
 
 To run the solution, just navigate to: https://ktkiiski.github.io/wunderdraw/
 
