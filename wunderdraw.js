@@ -1,9 +1,9 @@
 // The color definition in RGBA values
-const COLOR_START_UP = [7, 84, 19, 255];
-const COLOR_START_LEFT = [139, 57, 137, 255];
-const COLOR_STOP = [51, 69, 169, 255];
-const COLOR_TURN_RIGHT = [182, 149, 72, 255];
-const COLOR_TURN_LEFT = [123, 131, 154, 255];
+const COLOR_START_UP = rgb(7, 84, 19);
+const COLOR_START_LEFT = rgb(139, 57, 137);
+const COLOR_STOP = rgb(51, 69, 169);
+const COLOR_TURN_RIGHT = rgb(182, 149, 72);
+const COLOR_TURN_LEFT = rgb(123, 131, 154);
 
 // Some directional vector constants
 const VECTOR_UP = [0, -1];
@@ -24,11 +24,11 @@ window.onload = () => {
     // Iterate through all the pixels.
     // Start drawing from the pixels with a starting color
     eachPixel(sourceContext, (color, x, y) => {
-        if (isEqualRGB(color, COLOR_START_UP)) {
+        if (color === COLOR_START_UP) {
             // Start drawing up
             draw(sourceContext, targetContext, x, y, VECTOR_UP);
         }
-        else if (isEqualRGB(color, COLOR_START_LEFT)) {
+        else if (color === COLOR_START_LEFT) {
             // Start drawing left
             draw(sourceContext, targetContext, x, y, VECTOR_LEFT);
         }
@@ -47,15 +47,15 @@ function draw(source, target, x, y, direction) {
     const nextY = y + dY;
     // Determine the next action from the color at the source image
     const color = getPixelColor(source, nextX, nextY);
-    if (isEqualRGB(color, COLOR_STOP)) {
+    if (color === COLOR_STOP) {
         // Stop drawing and finish the stroke
         drawPixel(target, nextX, nextY);
     }
-    else if (isEqualRGB(color, COLOR_TURN_LEFT)) {
+    else if (color === COLOR_TURN_LEFT) {
         // Turn left and continue drawing
         draw(source, target, nextX, nextY, rotateLeft(direction));
     }
-    else if (isEqualRGB(color, COLOR_TURN_RIGHT)) {
+    else if (color === COLOR_TURN_RIGHT) {
         // Turn right and continue drawing
         draw(source, target, nextX, nextY, rotateRight(direction));
     }
@@ -66,7 +66,8 @@ function draw(source, target, x, y, direction) {
 }
 
 /**
- * Iterates through all the pixels on the canvas.
+ * Iterates through all the pixels on the canvas, calling the
+ * given callback for each of them.
  */
 function eachPixel(context, callback) {
     for (let y = 0; y < context.canvas.height; y += 1) {
@@ -78,18 +79,17 @@ function eachPixel(context, callback) {
 }
 
 /**
- * Reads the pixel color at the given coordinates of the context.
+ * Returns the hex value color of a given pixel of the context.
  */
 function getPixelColor(context, x, y) {
-    return context.getImageData(x, y, 1, 1).data;
+    return rgb(...context.getImageData(x, y, 1, 1).data);
 }
 
 /**
- * Returns whether or not two arrays, indicating RGBA values,
- * represents the same color.
+ * Converts RGB color values to a single hex integer for easy comparison.
  */
-function isEqualRGB(rgb1, rgb2) {
-    return rgb1.every((value, index) => rgb2[index] === value);
+function rgb(red, green, blue) {
+    return red << 16 | green << 8 | blue;
 }
 
 /**
@@ -107,10 +107,12 @@ function rotateLeft([x, y]) {
 }
 
 /**
- * Draw a single black pixel to the canvas context.
+ * Draw a single black pixel to the canvas context,
+ * with a slight gradient effect ;)
  */
 function drawPixel(context, x, y) {
-    const color = new Uint8ClampedArray([0, 0, 0, 255])
+    const red = Math.round(255 - y * 255 / context.canvas.height);
+    const color = new Uint8ClampedArray([red, 0, 0, 255])
     const pixel = new ImageData(color, 1, 1);
     context.putImageData(pixel, x, y);
 }
