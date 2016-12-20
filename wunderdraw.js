@@ -1,9 +1,13 @@
-// The color definition in hex values
-const COLOR_START_UP = rgb(7, 84, 19);
-const COLOR_START_LEFT = rgb(139, 57, 137);
-const COLOR_STOP = rgb(51, 69, 169);
-const COLOR_TURN_RIGHT = rgb(182, 149, 72);
-const COLOR_TURN_LEFT = rgb(123, 131, 154);
+// The color definition in RGBA values
+const COLOR_START_UP = [7, 84, 19, 255];
+const COLOR_START_LEFT = [139, 57, 137, 255];
+const COLOR_STOP = [51, 69, 169, 255];
+const COLOR_TURN_RIGHT = [182, 149, 72, 255];
+const COLOR_TURN_LEFT = [123, 131, 154, 255];
+
+// Some directional vector constants
+const VECTOR_UP = [0, -1];
+const VECTOR_LEFT = [-1, 0];
 
 // References to the canvas element and the context
 const canvas = document.getElementById('canvas');
@@ -11,14 +15,56 @@ const width = canvas.clientWidth;
 const height = canvas.clientWidth;
 const context = canvas.getContext("2d");
 
-// Draw the source image to the canvas
 const sourceImage = document.getElementById('source');
-context.drawImage(sourceImage, 0, 0);
+window.onload = () => {
+    // Draw the source image to the canvas
+    context.drawImage(sourceImage, 0, 0);
+
+    // Iterate through all the pixels
+    eachPixel(canvas, (context, color, x, y) => {
+        if (rgbEqual(color, COLOR_START_UP)) {
+            // Start drawing up
+            draw(context, x, y, VECTOR_UP);
+        }
+        else if (rgbEqual(color, COLOR_START_LEFT)) {
+            // Start drawing left
+            draw(context, x, y, VECTOR_LEFT);
+        }
+    });
+};
 
 /**
- * Converts the given RGB value to a hex value
- * that can be compared with Canvas pixel colors.
+ * Draws the figure starting at the position
+ * and towards the given direction.
  */
-function rgb(red, green, blue) {
-    return red << 16 | green << 8 | blue;
+function draw(context, x, y, direction) {
+    console.log(`TODO: Draw from ${x},${y} to direction:`, direction);
+}
+
+/**
+ * Iterates through all the pixels on the canvas.
+ */
+function eachPixel(canvas, callback) {
+    const context = canvas.getContext("2d");
+    for (let y = 0; y < canvas.clientHeight; y += 1) {
+        for (let x = 0; x < canvas.clientWidth; x += 1) {
+            const color = getPixelColor(context, x, y);
+            callback(context, color, x, y);
+        }
+    }
+}
+
+/**
+ * Reads the pixel color at the given coordinates of the context.
+ */
+function getPixelColor(context, x, y) {
+    return context.getImageData(x, y, 1, 1).data;
+}
+
+/**
+ * Returns whether or not two arrays, indicating RGBA values,
+ * represents the same color.
+ */
+function rgbEqual(rgb1, rgb2) {
+    return rgb1.every((value, index) => rgb2[index] === value);
 }
