@@ -18,14 +18,7 @@ const VECTOR_LEFT = [-1, 0];
 
 // Start drawing once the window has loaded the required image
 window.onload = () => {
-    // Draw the source image to the canvas
-    const sourceCanvas = document.createElement('canvas');
-    const sourceImage = document.getElementById('source-image');
-    sourceCanvas.width = sourceImage.width;
-    sourceCanvas.height = sourceImage.height;
-    const sourceContext = sourceCanvas.getContext('2d');
-    sourceContext.drawImage(sourceImage, 0, 0);
-
+    const sourceContext = makeImageContext(document.getElementById('source-image'));
     const targetCanvas = document.getElementById('target-canvas');
     const targetContext = targetCanvas.getContext('2d');
     // Iterate through all the pixels.
@@ -49,9 +42,9 @@ function draw(source, target, x, y, direction) {
     // Draw pixel at the starting position
     drawPixel(target, x, y);
     // Advance to the next position
-    const [dX, dY] = direction;
-    const nextX = x + dX;
-    const nextY = y + dY;
+    const [dx, dy] = direction;
+    const nextX = x + dx;
+    const nextY = y + dy;
     // Determine the next action from the color at the source image
     const color = getPixelColor(source, nextX, nextY);
     if (color === COLOR_STOP) {
@@ -83,6 +76,18 @@ function eachPixel(context, callback) {
             callback(color, x, y);
         }
     }
+}
+
+/**
+ * Converts the given image object to a canvas and returns its context.
+ */
+function makeImageContext(image) {
+    const canvas = document.createElement('canvas');
+    canvas.width = image.width;
+    canvas.height = image.height;
+    const context = canvas.getContext('2d');
+    context.drawImage(image, 0, 0);
+    return context;
 }
 
 /**
